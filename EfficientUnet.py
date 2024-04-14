@@ -39,9 +39,28 @@ class _Up(nn.Module):
         # https://github.com/xiaopeng-liao/Pytorch-UNet/commit/8ebac70e633bac59fc22bb5195e513d5832fb3bd
         x = torch.cat([x2, x1], dim=1)
         return self.conv(x)
-
-
-
+    
+class Up_no_cat(nn.Module):
+    
+    def __init__(self, in_channels, out_channels, bilinear=True):
+        super().__init__()
+        
+        if bilinear:
+            self.up = nn.Upsample(
+                scale_factor=2, mode="bilinear", align_corners=True
+            )
+            self.conv = _DoubleConv(in_channels, out_channels, in_channels // 2)
+        else:
+            self.up = nn.ConvTranspose2d(
+                in_channels, in_channels // 2, kernel_size=2, stride=2
+            )
+            self.conv = _DoubleConv(in_channels // 2, out_channels)
+        
+    def forward(self, x):
+        x = self.up(x)
+        return self.conv(x)
+    
+    
 class EfficientUnet(nn.Module):
     
     def __init__(self, 
@@ -73,12 +92,13 @@ class EfficientUnet(nn.Module):
         # self.up1 = _Up(112, 40, 256 // factor, bilinear=bilinear)     # (112, 16, 16) -> (256, 32, 32)
         # self.up2 = _Up(256, 24, 128 // factor, bilinear=bilinear)     # (256, 32, 32) -> (128, 64, 64)
         # self.up3 = _Up(128, 32, 64 // factor, bilinear=bilinear)      # (128, 64, 64) -> (64, 128, 128)
-        # self.up4 = _Up(64, 2, 32 // factor, bilinear=bilinear)                 # (64, 128, 128) -> (32, 256, 256)
+        # self.up4 = _Up(64, 2, 32 // factor, bilinear=bilinear)        # (64, 128, 128) -> (32, 256, 256)
         
         self.up1 = _Up(112, 40, 256, bilinear=False)     # (112, 16, 16) -> (256, 32, 32)
         self.up2 = _Up(256, 24, 128, bilinear=False)     # (256, 32, 32) -> (128, 64, 64)
         self.up3 = _Up(128, 32, 64, bilinear=False)      # (128, 64, 64) -> (64, 128, 128)
-        self.up4 = _Up(64, 2, 32, bilinear=False)        # (64, 128, 128) -> (32, 256, 256)
+        # self.up4 = _Up(64, 2, 32, bilinear=False)        # (64, 128, 128) -> (32, 256, 256)
+        self.up4 = Up_no_cat(64, 32, bilinear=False)
         
         
         # -- Output -- #
@@ -87,7 +107,7 @@ class EfficientUnet(nn.Module):
         
         
     def forward(self, x):                       # x -> (2, 256, 256)
-        x0 = x
+        # x0 = x
         x1 = self.encoder_block0(x)             # x1 -> (32, 128, 128)    
         x2 = self.encoder_block1(x1)            # x2 -> (24, 64, 64)
         x3 = self.encoder_block2(x2)            # x3 -> (40, 32, 32)
@@ -96,7 +116,8 @@ class EfficientUnet(nn.Module):
         x = self.up1(x4, x3)                    # x -> (256, 32, 32)
         x = self.up2(x, x2)                     # x -> (128, 64, 64)
         x = self.up3(x, x1)                     # x -> (64, 128, 128)
-        x = self.up4(x, x0)                      # x -> (32, 256, 256)
+        # x = self.up4(x, x0)                      # x -> (32, 256, 256)
+        x = self.up4(x)
         
         logits = self.outc(x)                    # logits -> (n_classes, 256, 256)
         
