@@ -36,12 +36,12 @@ def unique_mask_values(idx, mask_dir):
 
 
 class BasicDataset(Dataset):
-    def __init__(self, data_dir: str, mask_dir: str, transform=None):
+    def __init__(self, data_dir: str, mask_dir: str, augmentation: bool=False):
         
         # Data and mask directories
         self.data_dir = Path(data_dir)
         self.mask_dir = Path(mask_dir)
-        self.transform = transform
+        self.augmentation = augmentation
 
         # Get the ids of the train data
         self.ids = [splitext(file)[0] for file in listdir(data_dir) if isfile(join(data_dir, file)) and not file.startswith('.')]
@@ -74,20 +74,22 @@ class BasicDataset(Dataset):
         image = TF.pad(image, (0, 0, 0, 256 - image.shape[1]), padding_mode='symmetric')
         mask = TF.pad(mask, (0, 0, 0, 256 - mask.shape[1]), padding_mode='symmetric')
         
-        # # Random crop
-        i, j, h, w = transforms.RandomCrop.get_params(image, output_size=(256, 256))
-        image = TF.crop(image, i, j, h, w)
-        mask = TF.crop(mask, i, j, h, w)
+        if self.augmentation:
         
-        # Random horizontal flip
-        if random.random() > 0.5:
-            image = TF.hflip(image)
-            mask = TF.hflip(mask)
+            # # Random crop
+            i, j, h, w = transforms.RandomCrop.get_params(image, output_size=(256, 256))
+            image = TF.crop(image, i, j, h, w)
+            mask = TF.crop(mask, i, j, h, w)
+            
+            # Random horizontal flip
+            if random.random() > 0.5:
+                image = TF.hflip(image)
+                mask = TF.hflip(mask)
 
-        # Random Rotation between -5 and 5 degrees
-        angle = random.randint(-5, 5)
-        image = TF.rotate(image, angle)
-        mask = TF.rotate(mask, angle)
+            # Random Rotation between -5 and 5 degrees
+            angle = random.randint(-5, 5)
+            image = TF.rotate(image, angle)
+            mask = TF.rotate(mask, angle)
         
         return image, mask
     
@@ -119,18 +121,14 @@ class BasicDataset(Dataset):
         
         assert len(mask_file) == 1, f'Either no mask or multiple masks found for the ID {name}: {mask_file}'
         assert len(data_file) == 1, f'Either no image or multiple images found for the ID {name}: {data_file}'
-        # print(mask_file)
+
         mask = load_image(mask_file[0])                 # Máscara
         data = get_input_data(data_file[0])             # Dado com o gradiente
             
         mask = self.preprocess(mask, self.mask_values, is_mask=True)
         data = self.preprocess(data, self.mask_values, is_mask=False)
         
-        if self.transform:
-            data, mask = self.f_transform(data, mask)
-        else:
-            data = torch.from_numpy(data)
-            mask = torch.from_numpy(mask)
+        data, mask = self.f_transform(data, mask)
 
         return {
             'image': data,
