@@ -3,6 +3,9 @@ from PIL import Image
 import numpy as np
 import tifffile
 import torch
+import math
+import torch.nn.functional as Func
+
 
 
 def load_image(filename):
@@ -44,3 +47,42 @@ def get_input_data(filename) -> np.ndarray:
     data = load_image(filename)
     gradient = generate_gradient(data.shape)[:,:,1]
     return np.concatenate([np.expand_dims(data, axis=2), np.expand_dims(gradient, axis=2)], axis=2)
+
+
+def calculate_window_positions(image_width, image_height, window_size, step_size):
+    window_positions = []
+
+    # Calculate the number of passes in horizontal and vertical directions
+    horizontal_passes = math.floor((image_width - window_size) / step_size) + 1
+    vertical_passes = math.floor((image_height - window_size) / step_size) + 1
+
+    # Iterate over each pass
+    for i in range(vertical_passes):
+        for j in range(horizontal_passes):
+            # Calculate the initial position of the window
+            start_x = j * step_size
+            start_y = i * step_size
+
+            # Calculate the final position of the window
+            end_x = start_x + window_size
+            end_y = start_y + window_size
+
+            # window_positions.append(((start_x, start_y), (end_x, end_y)))
+            window_positions.append((start_x, start_y))
+
+    return window_positions
+
+
+def reconstruct_image(list_coords, list_images, n_classes, out_height, out_width):
+    
+    image_size = list_images[0].shape[1]
+    out_image = torch.zeros((n_classes, out_height, out_width))
+    
+    for i, (x, y) in enumerate(list_coords):
+        temp = Func.softmax(torch.tensor(list_images[i]).to(torch.int64), n_classes).permute(1, 2, 0) # Pvvment aplicar unsqueeze(dim=0)
+        aux = torch.add(out_image[y:y+image_size, x:x+image_size], temp)
+        out_image[y:y+image_size, x:x+image_size] = aux
+        
+    return out_image.argmax(dim=0)      # Ou dim=1, dependendo do shape
+
+    # Verifiar o shape contanto NCHW ou CHW
