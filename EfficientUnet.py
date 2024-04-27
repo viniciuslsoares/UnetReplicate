@@ -72,6 +72,9 @@ class EfficientUnet(nn.Module):
         super().__init__()
         factor = 2 if bilinear else 1
         
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+        
         weights = models.EfficientNet_B0_Weights.DEFAULT if pretrained_backbone else None
         
         net = efficientnet_b0(weights=weights)
