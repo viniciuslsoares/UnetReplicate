@@ -75,14 +75,15 @@ def calculate_window_positions(image_width, image_height, window_size, step_size
 
 def reconstruct_image(list_coords, list_images, n_classes, out_height, out_width):
     
-    image_size = list_images[0].shape[1]
+    image_size = list_images[0].shape[2]
     out_image = torch.zeros((n_classes, out_height, out_width))
     
     for i, (x, y) in enumerate(list_coords):
-        temp = Func.softmax(torch.tensor(list_images[i]).to(torch.int64), n_classes).permute(1, 2, 0) # Pvvment aplicar unsqueeze(dim=0)
-        aux = torch.add(out_image[y:y+image_size, x:x+image_size], temp)
-        out_image[y:y+image_size, x:x+image_size] = aux
+        temp = Func.softmax(torch.tensor(list_images[i]), dim=0).squeeze(dim=0) # Pvvment aplicar unsqueeze(dim=0)
+        slice = out_image[:, y:y+image_size, x:x+image_size]
+        aux = torch.add(slice, temp)
+        out_image[:, y:y+image_size, x:x+image_size] = aux
         
-    return out_image.argmax(dim=0)      # Ou dim=1, dependendo do shape
+    return out_image.argmax(dim=0).unsqueeze(dim=0)      # Ou dim=1, dependendo do shape
 
     # Verifiar o shape contanto NCHW ou CHW
