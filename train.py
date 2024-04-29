@@ -28,7 +28,6 @@ def train_model(
     batch_size: int = 1,
     learning_rate: float = 1e-5,
     val_percent: float = 0.1,
-    save_cp: bool = True,
     augmentation: bool = False,
     gradient_clipping: float = 1.0,
 ):

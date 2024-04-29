@@ -40,7 +40,7 @@ if __name__ == "__main__":
             dir_mask_val=val_mask_dir,
             dir_checkpoint=checkpoint_dir,
             save_checkpoint=True,
-            epochs=5,
+            epochs=1,
             batch_size=1,
             learning_rate=1e-5,
             val_percent=0.1,
