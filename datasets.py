@@ -129,8 +129,7 @@ class BasicDataset(Dataset):
         data = self.preprocess(data, self.mask_values, is_mask=False)
         
         data, mask = self.f_transform(data, mask)
-
         return {
             'image': data,
-            'mask': mask
+            'mask': mask.squeeze()
         }

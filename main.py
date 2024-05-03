@@ -13,6 +13,7 @@ import logging
 
 if __name__ == "__main__":
     
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
     model = EfficientUnet(n_classes=6)
@@ -23,6 +24,9 @@ if __name__ == "__main__":
     
     model.to(device=device)
     
+    BATCH_SIZE = 16
+    LEARNING_RATE = 1e-4
+    EPOCHS = 4
     
     train_dir = 'data/images/train'
     train_mask_dir = 'data/annotations/train'
@@ -30,44 +34,19 @@ if __name__ == "__main__":
     val_mask_dir = 'data/annotations/val'
     checkpoint_dir = 'checkpoints/'
     
-    try:
-        train_model(
-            model=model,
-            device=device,
-            dir_img_train=train_dir,
-            dir_mask_train=train_mask_dir,
-            dir_img_val=val_dir,
-            dir_mask_val=val_mask_dir,
-            dir_checkpoint=checkpoint_dir,
-            save_checkpoint=True,
-            epochs=1,
-            batch_size=1,
-            learning_rate=1e-5,
-            val_percent=0.1,
-            save_cp=True,
-            augmentation=False,
-            gradient_clipping=1.0,
-        )
-    
-    except torch.cuda.OutOfMemoryError:
-        logging.error('Detected OutOfMemoryError!')
-        torch.cuda.empty_cache()
-        model.use_checkpointing()
-        train_model(
-            model=model,
-            device=device,
-            dir_img_train=train_dir,
-            dir_mask_train=train_mask_dir,
-            dir_img_val=val_dir,
-            dir_mask_val=val_mask_dir,
-            dir_checkpoint=checkpoint_dir,
-            save_checkpoint=True,
-            epochs=5,
-            batch_size=1,
-            learning_rate=1e-5,
-            val_percent=0.1,
-            save_cp=True,
-            augmentation=False,
-            gradient_clipping=1.0,
-        )
-    pass
+    train_model(
+        model=model,
+        device=device,
+        dir_img_train=train_dir,
+        dir_mask_train=train_mask_dir,
+        dir_img_val=val_dir,
+        dir_mask_val=val_mask_dir,
+        dir_checkpoint=checkpoint_dir,
+        save_checkpoint=True,
+        epochs=EPOCHS,
+        batch_size=BATCH_SIZE,
+        learning_rate=LEARNING_RATE,
+        val_percent=0.1,
+        augmentation=True,
+        gradient_clipping=1.0,
+    )
