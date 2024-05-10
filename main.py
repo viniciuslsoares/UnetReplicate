@@ -24,9 +24,9 @@ if __name__ == "__main__":
     
     model.to(device=device)
     
-    BATCH_SIZE = 16
+    BATCH_SIZE = 32
     LEARNING_RATE = 1e-4
-    EPOCHS = 4
+    EPOCHS = 20
     
     train_dir = 'data/images/train'
     train_mask_dir = 'data/annotations/train'

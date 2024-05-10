@@ -36,7 +36,7 @@ def unique_mask_values(idx, mask_dir):
 
 
 class BasicDataset(Dataset):
-    def __init__(self, data_dir: str, mask_dir: str, augmentation: bool=False):
+    def __init__(self, data_dir: str, mask_dir: str, external_ids = None, augmentation: bool=False):
         
         # Data and mask directories
         self.data_dir = Path(data_dir)
@@ -44,10 +44,13 @@ class BasicDataset(Dataset):
         self.augmentation = augmentation
 
         # Get the ids of the train data
-        self.ids = [splitext(file)[0] for file in listdir(data_dir) if isfile(join(data_dir, file)) and not file.startswith('.')]
+        if external_ids is not None:
+            self.ids = list(external_ids)
+        else:
+            self.ids = [splitext(file)[0] for file in listdir(data_dir) if isfile(join(data_dir, file)) and not file.startswith('.')]
 
-        if not self.ids:
-            raise RuntimeError(f'No input file found in {data_dir}, make sure you put your images there')
+            if not self.ids:
+                raise RuntimeError(f'No input file found in {data_dir}, make sure you put your images there')
         
         logging.info(f'Creating dataset with {len(self.ids)} examples')
         logging.info('Scanning mask files to determine unique values')

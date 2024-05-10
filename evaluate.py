@@ -8,6 +8,7 @@ from torchmetrics.classification import MulticlassJaccardIndex, MulticlassF1Scor
 from utils import generate_gradient
 from torchmetrics.classification import Dice
 import torch.nn.functional as F
+from Minerva.sslt.losses.dice import DiceLoss
 
 
 from utils import calculate_window_positions, reconstruct_image
@@ -32,6 +33,7 @@ def evaluate_model(
     IoU_sum = 0
     F1_sum = 0
     
+    minerva_dice = DiceLoss(mode='multiclass', classes=None, log_loss=False, from_logits=True)
     cross_entropy = torch.nn.CrossEntropyLoss()
     dice = Dice().to(device=device)
     
@@ -80,11 +82,12 @@ def evaluate_model(
             pred_mask = net(image)[:,:,:mask_true.shape[1],:mask_true.shape[2]]
 
             ce_loss = cross_entropy(pred_mask, mask_true)   
-            dice_loss = (1 - dice(
-                F.softmax(pred_mask, dim=1),
-                F.one_hot(mask_true, 6).permute(0, 3, 1, 2)
-                ))
-            loss = ce_loss * 0.8 + dice_loss * 0.2
+            # dice_loss = (1 - dice(
+            #     F.softmax(pred_mask, dim=1),
+            #     F.one_hot(mask_true, 6).permute(0, 3, 1, 2)
+            #     ))
+            dice_loss = minerva_dice(pred_mask, mask_true)
+            loss = ce_loss * 0.25 + dice_loss * 0.75
             
             pred_mask = torch.argmax(pred_mask, dim=1)
             IoU_sum += IoU(pred_mask, mask_true)

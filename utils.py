@@ -99,3 +99,14 @@ def plot_and_save(x1, x1_name, filename, x2=None, x2_name=None, x3=None, x3_name
     plt.legend()
     plt.savefig(filename)
     plt.close() 
+    
+
+def contar_prefixos(lista):
+    contagem = {'xl':0, 'il':0}
+    for elemento in lista:
+        prefixo = elemento[:2]
+        if prefixo in contagem:
+            contagem[prefixo] += 1
+        else:
+            contagem[prefixo] = 1
+    return contagem
