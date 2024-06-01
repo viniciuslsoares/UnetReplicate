@@ -1,0 +1,11 @@
+# Configuration file for the Trainer class.
+
+# Class and __init__ arguments.
+class_path: lightning.Trainer
+init_args:
+  # Accelerator to use (CPU, GPU, TPU, ..).
+  accelerator: gpu
+  # Number of accelerator devices to use.
+  devices: 1
+  # Maximum number of epochs to train.
+  max_epochs: 100

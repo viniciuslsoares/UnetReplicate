@@ -1,0 +1,5 @@
+model: "/workspace/Minerva-Workshop/configs/model/efficientUnet.yaml"
+trainer: "/workspace/Minerva-Workshop/configs/trainer/default.yaml"
+run:
+  task: fit
+  data: "/workspace/Minerva-Workshop/configs/data_module/f3.yaml"

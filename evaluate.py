@@ -8,7 +8,7 @@ from torchmetrics.classification import MulticlassJaccardIndex, MulticlassF1Scor
 from utils import generate_gradient
 from torchmetrics.classification import Dice
 import torch.nn.functional as F
-from Minerva.sslt.losses.dice import DiceLoss
+from minerva.losses.dice import DiceLoss
 
 
 from utils import calculate_window_positions, reconstruct_image

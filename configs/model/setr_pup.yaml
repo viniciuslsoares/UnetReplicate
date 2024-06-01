@@ -1,0 +1,26 @@
+# Configurations for SETR_PUP model
+
+# Class path of the model and its __init__ arguments.
+class_path: minerva.models.nets.setr.SETR_PUP
+init_args:
+  image_size: [256, 704]
+  num_classes: 6
+  # Metrics to use for training, validation, and testing.
+  train_metrics:
+    mIoU:
+      class_path: torchmetrics.JaccardIndex
+      init_args:
+        num_classes: 6
+        task: "multiclass"
+  val_metrics:
+    mIoU:
+      class_path: torchmetrics.JaccardIndex
+      init_args:
+        num_classes: 6
+        task: "multiclass"
+  test_metrics:
+    mIoU:
+      class_path: torchmetrics.JaccardIndex
+      init_args:
+        num_classes: 6
+        task: "multiclass"

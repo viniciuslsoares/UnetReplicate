@@ -1,0 +1,10 @@
+class_path: example.F3DataModule
+init_args:
+  train_path: "/workspace/f3/images"
+  annotations_path: "/workspace/f3/annotations"
+  batch_size: 16
+  transforms:
+    class_path: example.Padding
+    init_args:
+      target_h_size: 256
+      target_w_size: 704

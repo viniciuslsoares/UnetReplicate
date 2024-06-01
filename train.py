@@ -13,7 +13,7 @@ from torchmetrics.image import TotalVariation
 import torch.nn.functional as F
 from pathlib import Path
 from torchmetrics.classification import MulticlassJaccardIndex
-from Minerva.sslt.losses.dice import DiceLoss
+from minerva.losses.dice import DiceLoss
 
 
 from utils import plot_and_save, contar_prefixos

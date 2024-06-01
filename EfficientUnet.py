@@ -1,10 +1,14 @@
-from torchsummary import summary
+
 from torchvision.models import efficientnet_b0
 from torch import nn
 import torch
-from Minerva.sslt.models.nets.unet import _OutConv, _DoubleConv
 import torch.nn.functional as F
 import torchvision.models as models
+from minerva.models.nets.unet import _OutConv, _DoubleConv
+from minerva.models.nets.base import SimpleSupervisedModel
+from typing import Dict, Optional
+
+
 
 class _Up(nn.Module):
     """Upscaling then double conv"""
@@ -40,7 +44,7 @@ class _Up(nn.Module):
         x = torch.cat([x2, x1], dim=1)
         return self.conv(x)
     
-class Up_no_cat(nn.Module):
+class _Up_no_cat(nn.Module):
     
     def __init__(self, in_channels, out_channels, bilinear=True):
         super().__init__()
@@ -61,7 +65,7 @@ class Up_no_cat(nn.Module):
         return self.conv(x)
     
     
-class EfficientUnet(nn.Module):
+class _EfficientUnet(nn.Module):
     
     def __init__(self, 
                     n_channels: int=2, 
@@ -96,7 +100,7 @@ class EfficientUnet(nn.Module):
         self.up2 = _Up(256, 24, 128, bilinear=False)     # (256, 32, 32) -> (128, 64, 64)
         self.up3 = _Up(128, 32, 64, bilinear=False)      # (128, 64, 64) -> (64, 128, 128)
         # self.up4 = _Up(64, 2, 32, bilinear=False)        # (64, 128, 128) -> (32, 256, 256)
-        self.up4 = Up_no_cat(64, 32, bilinear=False)
+        self.up4 = _Up_no_cat(64, 32, bilinear=False)
         
         
         # -- Output -- #
@@ -120,3 +124,25 @@ class EfficientUnet(nn.Module):
         logits = self.outc(x)                    # logits -> (n_classes, 256, 256)
         
         return logits
+    
+class EfficientUnet(SimpleSupervisedModel):
+    
+    def __init__(
+        self, 
+        n_channels: int=2,
+        n_classes: int=6,
+        learning_rate: float=0.001,
+        bilinear: bool=False,
+        loss_fn: Optional[torch.nn.Module] = None,
+        **kwargs,
+    ):
+        
+        
+        super().__init__(
+            backbone=_EfficientUnet(n_channels=n_channels, n_classes=n_classes, bilinear=bilinear),
+            fc=torch.nn.Identity(),
+            loss_fn=loss_fn or torch.nn.CrossEntropyLoss(),
+            learning_rate=learning_rate,
+            flatten=False,
+            **kwargs
+        )

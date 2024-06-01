@@ -1,0 +1,22 @@
+class_path: minerva.models.nets.EfficientUnet.EfficientUnet
+init_args:
+  n_classes: 6
+  n_channels: 2
+  train_metrics:
+    mIoU:
+      class_path: torchmetrics.JaccardIndex
+      init_args:
+        num_classes: 6
+        task: "multiclass"
+  val_metrics:
+    mIoU:
+      class_path: torchmetrics.JaccardIndex
+      init_args:
+        num_classes: 6
+        task: "multiclass"
+  test_metrics:
+    mIoU:
+      class_path: torchmetrics.JaccardIndex
+      init_args:
+        num_classes: 6
+        task: "multiclass"

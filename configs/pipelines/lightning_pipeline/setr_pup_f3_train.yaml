@@ -1,0 +1,5 @@
+model: "/workspaces/seismic/Minerva-Workshop/configs/model/setr_pup.yaml"
+trainer: "/workspaces/seismic/Minerva-Workshop/configs/trainer/default.yaml"
+run:
+  task: fit
+  data: "/workspaces/seismic/Minerva-Workshop/configs/data_module/f3.yaml"
