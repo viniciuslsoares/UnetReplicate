@@ -47,9 +47,7 @@ class F3DataModule(L.LightningDataModule):
         self.annotations_path = Path(annotations_path)
         self.transforms = transforms
         self.batch_size = batch_size
-        self.num_workers = (
-            num_workers if num_workers is not None else os.cpu_count()
-        )
+        self.num_workers = num_workers if num_workers is not None else os.cpu_count()
 
         self.datasets = {}
 

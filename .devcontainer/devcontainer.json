@@ -1,0 +1,37 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "postStartCommand": ".devcontainer/post_start.sh",
+    "containerUser": "vscode",
+    "shutdownAction": "none",
+
+    "runArgs": [
+        "--name",
+        "seismic_vinicius",
+        "--restart", 
+        "unless-stopped",
+        "--gpus",
+        "all",
+        "--shm-size",
+        "4g",
+        "--ulimit",
+        "memlock=-1",
+        "--ulimit",
+        "stack=67108864"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.vscode-jupyter-powertoys",
+                "donjayamanne.git-extension-pack"
+            ]
+        }
+    },
+    "mounts": [
+        "source=/home/shared,target=/workspaces/shared_data,type=bind,consistency=cached"
+    ]
+}

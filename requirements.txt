@@ -1,0 +1,27 @@
+# Núcleo PyTorch + visão computacional
+torch==2.1.0
+torchvision==0.16.0
+
+# NumPy compatível com numba
+numpy==1.23.5
+
+# Pandas compatível com cudf
+pandas==1.5.3
+
+# Visualização
+matplotlib==3.7.1
+
+# Bibliotecas para aceleração GPU (CUDA 12.x)
+cudf==23.4.0
+dask-cudf==23.4.0
+dask-cuda==23.4.0
+cupy-cuda12x==12.1.0
+
+# Compilador JIT para GPU
+numba==0.56.4
+
+# Outras libs úteis
+scikit-learn==1.2.2
+scipy==1.10.1
+seaborn==0.12.2
+pyyaml==6.0

@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from matplotlib.colors import ListedColormap
 
+
 class Padding(_Transform):
     def __init__(self, target_h_size: int, target_w_size: int):
         self.target_h_size = target_h_size
@@ -34,11 +35,14 @@ class Padding(_Transform):
         padded = np.transpose(padded, (2, 0, 1))
         return padded
 
+
 class SqueezeTarget(_Transform):
     def __call__(self, x: np.ndarray) -> np.ndarray:
         if x.shape[0] == 1:
             return np.squeeze(x, axis=0).to(dtype=torch.long)
-        else: return x
+        else:
+            return x
+
 
 class F3DataModule(L.LightningDataModule):
     def __init__(
@@ -54,9 +58,7 @@ class F3DataModule(L.LightningDataModule):
         self.annotations_path = Path(annotations_path)
         self.transforms = transforms
         self.batch_size = batch_size
-        self.num_workers = (
-            num_workers if num_workers is not None else os.cpu_count()
-        )
+        self.num_workers = num_workers if num_workers is not None else os.cpu_count()
 
         self.datasets = {}
 
@@ -139,9 +141,11 @@ label_cmap = ListedColormap(
 train_path = "/workspace/f3/images"
 annotation_path = "/workspace/f3/annotations"
 
-transform = TransformPipeline([
-    Padding(256, 704),
-])
+transform = TransformPipeline(
+    [
+        Padding(256, 704),
+    ]
+)
 
 data_module = F3DataModule(
     train_path=train_path,
@@ -164,11 +168,7 @@ trainer = L.Trainer(
     devices=[0],
 )
 
-pipeline = SimpleLightningPipeline(
-    model=model,
-    trainer=trainer,
-    save_run_status=True
-)
+pipeline = SimpleLightningPipeline(model=model, trainer=trainer, save_run_status=True)
 
 pipeline.run(data=data_module, task="fit")
 
