@@ -16,10 +16,10 @@ from torchmetrics.classification import MulticlassJaccardIndex
 from minerva.losses.dice import DiceLoss
 
 
-from utils import plot_and_save, contar_prefixos
+from unetreplicate.src.unetreplicate.aux.utils import plot_and_save, contar_prefixos
 import matplotlib.pyplot as plt
-from evaluate import evaluate_model
-from datasets import BasicDataset
+from unetreplicate.src.unetreplicate.scripts.evaluate import evaluate_model
+from unetreplicate.src.unetreplicate.data_module.datasets import BasicDataset
 
 
 def train_model(
@@ -131,7 +131,6 @@ def train_model(
 
         DICE_WHEIGHT = 0.65
         CROSS_ENTROPY_WHEIGHT = 0.25
-        TOTAL_VARIATION_WHEIGHT = 0.1
 
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", patience=5)

@@ -192,7 +192,6 @@ class EfficientUnet(SimpleSupervisedModel):
         n_channels: int = 2,
         n_classes: int = 6,
         learning_rate: float = 0.001,
-        bilinear: bool = False,
         loss_fn: Optional[torch.nn.Module] = None,
         **kwargs,
     ):

@@ -1,7 +1,7 @@
-from train import train_model
-from evaluate import evaluate_model
-from datasets import BasicDataset
-from EfficientUnet import EfficientUnet
+from unetreplicate.src.unetreplicate.scripts.train import train_model
+from unetreplicate.src.unetreplicate.scripts.evaluate import evaluate_model
+from unetreplicate.src.unetreplicate.data_module.datasets import BasicDataset
+from unetreplicate.src.unetreplicate.model.EfficientUnet import EfficientUnet
 from torch.utils.data import DataLoader
 import os
 

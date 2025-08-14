@@ -1,3 +1,4 @@
+
 import torch
 import numpy as np
 
@@ -5,13 +6,13 @@ import torch.nn.functional as Func
 from tqdm import tqdm
 import torchvision.transforms.functional as TF
 from torchmetrics.classification import MulticlassJaccardIndex, MulticlassF1Score
-from utils import generate_gradient
+from unetreplicate.src.unetreplicate.aux.utils import generate_gradient
 from torchmetrics.classification import Dice
 import torch.nn.functional as F
 from minerva.losses.dice import DiceLoss
 
 
-from utils import calculate_window_positions, reconstruct_image
+from unetreplicate.src.unetreplicate.aux.utils import calculate_window_positions, reconstruct_image
 
 
 def evaluate_model(
